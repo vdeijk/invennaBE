@@ -1,0 +1,8 @@
+C:\Users\Gebruiker\repos\Invenna\BE\BE\obj\Debug\net8.0\BE.csproj.AssemblyReference.cache
+C:\Users\Gebruiker\repos\Invenna\BE\BE\obj\Debug\net8.0\BE.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Gebruiker\repos\Invenna\BE\BE\obj\Debug\net8.0\BE.AssemblyInfoInputs.cache
+C:\Users\Gebruiker\repos\Invenna\BE\BE\obj\Debug\net8.0\BE.AssemblyInfo.cs
+C:\Users\Gebruiker\repos\Invenna\BE\BE\obj\Debug\net8.0\BE.csproj.CoreCompileInputs.cache
+C:\Users\Gebruiker\repos\Invenna\BE\BE\obj\Debug\net8.0\BE.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\Gebruiker\repos\Invenna\BE\BE\obj\Debug\net8.0\BE.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\Gebruiker\repos\Invenna\BE\BE\obj\Debug\net8.0\BE.sourcelink.json
