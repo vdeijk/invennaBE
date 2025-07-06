@@ -77,11 +77,8 @@ namespace BE.Import
                 BadDataFound = badData => Console.WriteLine($"Bad data found: {badData}"),
                 MissingFieldFound = null,
                 HeaderValidated = null,
-                IgnoreBlankLines = true,
-                ReadingExceptionOccurred = args => {
-                    Console.WriteLine($"Skipped row due to error: {args.Exception.Message}");
-                    return false; // skip row
-                }
+                IgnoreBlankLines = true
+                // IgnoreReadingExceptions and ReadingExceptionOccurred are not available in CsvHelper 30+
             };
 
             using var reader = new StreamReader(csvPath);

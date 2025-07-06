@@ -1,84 +1,84 @@
 using Microsoft.EntityFrameworkCore;
-using BE.Data;
-using BE.Interfaces;
-using BE.Repositories;
-using BE.Import;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
-    {
-        Title = "Geographical Data API",
-        Version = "v1",
-        Description = "API for managing geographical data"
-    });
-});
-
-// Add Entity Framework
-builder.Services.AddDbContext<GeographicalDataContext>(options =>
+builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<BE.Data.GeographicalDataContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// Add repository
-builder.Services.AddScoped<IGeographicalDataRepository, GeographicalDataRepository>();
-
-// Add CORS support for Angular frontend
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAngularApp", builder =>
-    {
-        builder.WithOrigins("http://localhost:4200") // Angular default port
-               .AllowAnyMethod()
-               .AllowAnyHeader();
-    });
-});
+builder.Services.AddScoped<BE.Interfaces.IGeographicalDataRepository, BE.Repositories.GeographicalDataRepository>();
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// CSV Import logic
-if (args.Contains("--import"))
-{
-    using var scope = app.Services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<GeographicalDataContext>();
-    var csvPath = Path.Combine("Data", "geographicaldata (1).csv");
-    ImportGeographicalData.ImportFromCsv(db, csvPath);
-    return; // Exit after import
-}
-
-// Ensure database is created and seeded
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<GeographicalDataContext>();
-    try
-    {
-        context.Database.EnsureCreated();
-    }
-    catch (Exception ex)
-    {
-        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-        logger.LogError(ex, "An error occurred while creating the database.");
-    }
-}
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Geographical Data API V1");
-        c.RoutePrefix = string.Empty; // Set Swagger UI at the app's root
-    });
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-app.UseCors("AllowAngularApp");
 
-app.UseAuthorization();
 app.MapControllers();
+
+// Temporary: Seed a few GeographicalData records if table is empty
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<BE.Data.GeographicalDataContext>();
+    if (!db.GeographicalData.Any())
+    {
+        db.GeographicalData.AddRange(
+            new BE.Models.GeographicalData {
+                Openbareruimte = "Kerkstraat",
+                Huisnummer = 1,
+                Huisletter = "A",
+                Huisnummertoevoeging = null,
+                Postcode = "1234AB",
+                Woonplaats = "Amsterdam",
+                Gemeente = "Amsterdam",
+                Provincie = "Noord-Holland",
+                Nummeraanduiding = "0363010000000001",
+                Verblijfsobjectgebruiksdoel = "woonfunctie",
+                Oppervlakteverblijfsobject = 75,
+                Verblijfsobjectstatus = "Verblijfsobject in gebruik",
+                ObjectId = "NL.IMBAG.Verblijfsobject.0363010000000001",
+                ObjectType = "Verblijfsobject",
+                Nevenadres = null,
+                Pandid = "NL.IMBAG.Pand.0363100000000001",
+                Pandstatus = "Pand in gebruik",
+                Pandbouwjaar = 1950,
+                X = 121000,
+                Y = 487000,
+                Lon = 4.9041,
+                Lat = 52.3676
+            },
+            new BE.Models.GeographicalData {
+                Openbareruimte = "Hoofdstraat",
+                Huisnummer = 25,
+                Huisletter = null,
+                Huisnummertoevoeging = null,
+                Postcode = "3511AB",
+                Woonplaats = "Utrecht",
+                Gemeente = "Utrecht",
+                Provincie = "Utrecht",
+                Nummeraanduiding = "0344010000000002",
+                Verblijfsobjectgebruiksdoel = "winkelfunctie",
+                Oppervlakteverblijfsobject = 120,
+                Verblijfsobjectstatus = "Verblijfsobject in gebruik",
+                ObjectId = "NL.IMBAG.Verblijfsobject.0344010000000002",
+                ObjectType = "Verblijfsobject",
+                Nevenadres = null,
+                Pandid = "NL.IMBAG.Pand.0344100000000002",
+                Pandstatus = "Pand in gebruik",
+                Pandbouwjaar = 1975,
+                X = 155000,
+                Y = 463000,
+                Lon = 5.1214,
+                Lat = 52.0907
+            }
+        );
+        db.SaveChanges();
+    }
+}
 
 app.Run();
