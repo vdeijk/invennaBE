@@ -7,7 +7,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<BE.Data.GeographicalDataContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<BE.Interfaces.IGeographicalDataRepository, BE.Repositories.GeographicalDataRepository>();
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
+    });
 
 var app = builder.Build();
 

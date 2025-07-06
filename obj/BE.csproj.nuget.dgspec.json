@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Gebruiker\\repos\\Invenna\\BE\\BE\\BE.csproj": {}
+    "C:\\Users\\Gebruiker\\repos\\Invenna\\be\\be\\BE.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Gebruiker\\repos\\Invenna\\BE\\BE\\BE.csproj": {
+    "C:\\Users\\Gebruiker\\repos\\Invenna\\be\\be\\BE.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Gebruiker\\repos\\Invenna\\BE\\BE\\BE.csproj",
+        "projectUniqueName": "C:\\Users\\Gebruiker\\repos\\Invenna\\be\\be\\BE.csproj",
         "projectName": "BE",
-        "projectPath": "C:\\Users\\Gebruiker\\repos\\Invenna\\BE\\BE\\BE.csproj",
+        "projectPath": "C:\\Users\\Gebruiker\\repos\\Invenna\\be\\be\\BE.csproj",
         "packagesPath": "C:\\Users\\Gebruiker\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Gebruiker\\repos\\Invenna\\BE\\BE\\obj\\",
+        "outputPath": "C:\\Users\\Gebruiker\\repos\\Invenna\\be\\be\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
