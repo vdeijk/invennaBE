@@ -21,10 +21,11 @@ app.UseHttpsRedirection();
 
 app.MapControllers();
 
-// Temporary: Seed a few GeographicalData records if table is empty
+// Ensure database and tables are created, then seed data if needed
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<BE.Data.GeographicalDataContext>();
+    db.Database.EnsureCreated(); // <-- Use EnsureCreated for local dev
     if (!db.GeographicalData.Any())
     {
         db.GeographicalData.AddRange(

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "11Ngr8V9O/8=",
+  "dgSpecHash": "1w5TWPS8JtI=",
   "success": true,
-  "projectFilePath": "C:\\Users\\Gebruiker\\repos\\Invenna\\be\\be\\BE.csproj",
+  "projectFilePath": "C:\\Users\\Gebruiker\\repos\\Invenna\\BE\\BE\\BE.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Gebruiker\\.nuget\\packages\\csvhelper\\30.0.1\\csvhelper.30.0.1.nupkg.sha512",
     "C:\\Users\\Gebruiker\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
