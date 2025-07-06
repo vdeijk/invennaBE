@@ -50,9 +50,9 @@ namespace BE.Controllers
             try
             {
                 _logger.LogInformation("Retrieving geographical data with ID: {Id}", id);
-                
+
                 var item = await _repository.GetByIdAsync(id);
-                
+
                 if (item == null)
                 {
                     _logger.LogWarning("Geographical data with ID {Id} not found", id);
@@ -74,34 +74,17 @@ namespace BE.Controllers
         /// <param name="geographicalData">The geographical data to create</param>
         /// <returns>The created geographical data item</returns>
         [HttpPost]
-        public async Task<ActionResult<GeographicalData>> CreateGeographicalData(GeographicalData geographicalData)
+        public async Task<ActionResult<GeographicalData>> CreateGeographicalData([FromBody] GeographicalData geographicalData)
         {
+            if (geographicalData == null)
+            {
+                return BadRequest("Invalid payload");
+            }
             try
             {
-                if (geographicalData == null)
-                {
-                    return BadRequest("Geographical data cannot be null");
-                }
-
-                // Validate required fields
-                if (string.IsNullOrEmpty(geographicalData.Openbareruimte) ||
-                    string.IsNullOrEmpty(geographicalData.Postcode) ||
-                    string.IsNullOrEmpty(geographicalData.Woonplaats))
-                {
-                    return BadRequest("Required fields (Openbareruimte, Postcode, Woonplaats) cannot be empty");
-                }
-
-                // Reset ID for creation
-                geographicalData.Id = 0;
-                
-                var createdItem = await _repository.CreateAsync(geographicalData);
-
-                _logger.LogInformation("Created new geographical data with ID: {Id}", createdItem.Id);
-                
-                return CreatedAtAction(
-                    nameof(GetGeographicalData),
-                    new { id = createdItem.Id },
-                    createdItem);
+                var created = await _repository.CreateAsync(geographicalData);
+                _logger.LogInformation("Created new geographical data with ID: {Id}", created.Id);
+                return CreatedAtAction(nameof(GetGeographicalData), new { id = created.Id }, created);
             }
             catch (Exception ex)
             {
@@ -109,7 +92,6 @@ namespace BE.Controllers
                 return StatusCode(500, "Internal server error while creating geographical data");
             }
         }
-
         /// <summary>
         /// Updates an existing geographical data item
         /// </summary>
@@ -148,7 +130,7 @@ namespace BE.Controllers
                 var updatedItem = await _repository.UpdateAsync(geographicalData);
 
                 _logger.LogInformation("Updated geographical data with ID: {Id}", id);
-                
+
                 return Ok(updatedItem);
             }
             catch (Exception ex)
@@ -176,7 +158,7 @@ namespace BE.Controllers
                 }
 
                 _logger.LogInformation("Deleted geographical data with ID: {Id}", id);
-                
+
                 return NoContent();
             }
             catch (Exception ex)
