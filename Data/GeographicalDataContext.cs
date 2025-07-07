@@ -16,7 +16,6 @@ namespace BE.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Configure the GeographicalData entity
             modelBuilder.Entity<GeographicalData>(entity =>
             {
                 entity.HasKey(e => e.Id);
@@ -116,7 +115,6 @@ namespace BE.Data
                     .HasDatabaseName("IX_GeographicalData_Address");
             });
 
-            // Seed data
             modelBuilder.Entity<GeographicalData>().HasData(
                 new GeographicalData
                 {
