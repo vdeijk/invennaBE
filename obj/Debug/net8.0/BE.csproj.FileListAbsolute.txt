@@ -125,3 +125,5 @@ C:\Users\Gebruiker\repos\Invenna\BE\BE\bin\Debug\net8.0\ru\Microsoft.CodeAnalysi
 C:\Users\Gebruiker\repos\Invenna\BE\BE\bin\Debug\net8.0\tr\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\Gebruiker\repos\Invenna\BE\BE\bin\Debug\net8.0\zh-Hans\Microsoft.CodeAnalysis.Workspaces.resources.dll
 C:\Users\Gebruiker\repos\Invenna\BE\BE\bin\Debug\net8.0\zh-Hant\Microsoft.CodeAnalysis.Workspaces.resources.dll
+C:\Users\Gebruiker\repos\Invenna\be\be\bin\Debug\net8.0\Microsoft.AspNetCore.Mvc.Versioning.dll
+C:\Users\Gebruiker\repos\Invenna\BE\BE\bin\Debug\net8.0\Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer.dll
