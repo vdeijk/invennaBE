@@ -11,18 +11,28 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.0">
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.7">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.0" />
-    <PackageReference Include="CsvHelper" Version="30.0.1" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.3" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.7" />
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
   </ItemGroup>
-
   <ItemGroup>
-    <Compile Remove="BE.Tests\**\*.cs" />
+    <ProjectReference Include="BE.API/BE.API.csproj" />
+    <ProjectReference Include="BE.Data/BE.Data.csproj" />
+    <ProjectReference Include="BE.Domain/BE.Domain.csproj" />
+    <ProjectReference Include="BE.Services/BE.Services.csproj" />
   </ItemGroup>
 
+  <!-- Exclude source files from sub-project directories to prevent duplicate compilation -->
+  <ItemGroup>
+    <Compile Remove="BE.API/**/*.cs" />
+    <Compile Remove="BE.Data/**/*.cs" />
+    <Compile Remove="BE.Domain/**/*.cs" />
+    <Compile Remove="BE.Services/**/*.cs" />
+    <Compile Remove="BE.Tests/**/*.cs" />
+  </ItemGroup>
 </Project>

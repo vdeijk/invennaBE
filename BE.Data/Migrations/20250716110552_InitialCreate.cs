@@ -2,9 +2,7 @@
 
 #nullable disable
 
-#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
-
-namespace BE.Migrations
+namespace BE.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialCreate : Migration
@@ -44,16 +42,6 @@ namespace BE.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_GeographicalData", x => x.Id);
-                });
-
-            migrationBuilder.InsertData(
-                table: "GeographicalData",
-                columns: new[] { "Id", "Gemeente", "Huisletter", "Huisnummer", "Huisnummertoevoeging", "Lat", "Lon", "Nevenadres", "Nummeraanduiding", "ObjectId", "ObjectType", "Openbareruimte", "Oppervlakteverblijfsobject", "Pandbouwjaar", "Pandid", "Pandstatus", "Postcode", "Provincie", "Verblijfsobjectgebruiksdoel", "Verblijfsobjectstatus", "Woonplaats", "X", "Y" },
-                values: new object[,]
-                {
-                    { 1, "Amsterdam", "A", 1, null, 52.367600000000003, 4.9040999999999997, null, "0363010000000001", "NL.IMBAG.Verblijfsobject.0363010000000001", "Verblijfsobject", "Kerkstraat", 75, 1950, "NL.IMBAG.Pand.0363100000000001", "Pand in gebruik", "1234AB", "Noord-Holland", "woonfunctie", "Verblijfsobject in gebruik", "Amsterdam", 121000, 487000 },
-                    { 2, "Utrecht", null, 25, null, 52.090699999999998, 5.1214000000000004, null, "0344010000000002", "NL.IMBAG.Verblijfsobject.0344010000000002", "Verblijfsobject", "Hoofdstraat", 120, 1975, "NL.IMBAG.Pand.0344100000000002", "Pand in gebruik", "3511AB", "Utrecht", "winkelfunctie", "Verblijfsobject in gebruik", "Utrecht", 155000, 463000 },
-                    { 3, "Nijmegen", "B", 8, 2, 51.812600000000003, 5.8520000000000003, null, "0268010000000003", "NL.IMBAG.Verblijfsobject.0268010000000003", "Verblijfsobject", "Dorpsplein", 200, 2000, "NL.IMBAG.Pand.0268100000000003", "Pand in gebruik", "6543CD", "Gelderland", "kantoorfunctie", "Verblijfsobject in gebruik", "Nijmegen", 190000, 426000 }
                 });
 
             migrationBuilder.CreateIndex(

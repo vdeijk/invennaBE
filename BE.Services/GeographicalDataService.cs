@@ -1,4 +1,4 @@
-using BE.API.DTOs;
+using BE.Domain.DTOs;
 using BE.Domain.Interfaces;
 using BE.Domain.Models;
 using Microsoft.Extensions.Logging;

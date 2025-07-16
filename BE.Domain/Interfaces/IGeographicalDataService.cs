@@ -1,4 +1,4 @@
-using BE.API.DTOs;
+using BE.Domain.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

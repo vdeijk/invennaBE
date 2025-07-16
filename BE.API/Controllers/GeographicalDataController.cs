@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using BE.Domain.Interfaces;
-using BE.API.DTOs;
+using BE.Domain.DTOs;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace BE.API.Controllers
 {

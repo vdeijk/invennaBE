@@ -1,18 +1,28 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.7" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\BE.Services\BE.Services.csproj" />
     <ProjectReference Include="..\BE.Domain\BE.Domain.csproj" />
+    <!-- Removed BE.Data reference - controllers should not directly reference data layer -->
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
+    <!-- Removed duplicate packages that are already in main project or other layers -->
   </ItemGroup>
 
 </Project>
