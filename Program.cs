@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using BE.Import;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var dataPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "BE.Data", "GeographicalData.db"));
@@ -43,5 +45,29 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapControllers();
+
+// Import CSV data if database is empty
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<BE.Data.GeographicalDataContext>();
+    if (!dbContext.GeographicalData.Any())
+    {
+        var csvPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "BE.Data", "Data", "geographicaldata (1).csv"));
+        if (File.Exists(csvPath))
+        {
+            Console.WriteLine("Database is empty. Importing CSV data...");
+            var importedCount = ImportGeographicalData.ImportFromCsv(dbContext, csvPath);
+            Console.WriteLine($"Successfully imported {importedCount} records.");
+        }
+        else
+        {
+            Console.WriteLine($"CSV file not found at: {csvPath}");
+        }
+    }
+    else
+    {
+        Console.WriteLine($"Database already contains {dbContext.GeographicalData.Count()} records.");
+    }
+}
 
 app.Run();
