@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace BE.Models
+namespace BE.Domain.Models
 {
     /// <summary>
     /// Entity model for geographical data (database table).
@@ -78,13 +78,18 @@ namespace BE.Models
 
         /// <summary>Year of construction.</summary>
         public int Pandbouwjaar { get; set; }
+
         /// <summary>X coordinate.</summary>
         public int X { get; set; }
+
         /// <summary>Y coordinate.</summary>
         public int Y { get; set; }
+
         /// <summary>Longitude.</summary>
         public double Lon { get; set; }
+
         /// <summary>Latitude.</summary>
         public double Lat { get; set; }
+        // ...rest of the model code remains unchanged...
     }
 }

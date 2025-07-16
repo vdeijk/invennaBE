@@ -1,8 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using BE.Data;
-using BE.Interfaces;
-using BE.Models;
-using Microsoft.Extensions.Logging;
+using BE.Domain.Interfaces;
+using BE.Domain.Models;
 
 namespace BE.Repositories
 {
@@ -17,21 +16,19 @@ namespace BE.Repositories
             _logger = logger;
         }
 
-        public async Task<IEnumerable<GeographicalData>> GetAllAsync()
+        public async Task<IEnumerable<BE.Domain.Models.GeographicalData>> GetAllAsync()
         {
             _logger.LogInformation("Retrieving all geographical data from the database");
             var result = await _context.GeographicalData
-                .AsNoTracking()
                 .ToListAsync();
             _logger.LogInformation("Retrieved {Count} geographical data items", result.Count);
             return result;
         }
 
-        public async Task<GeographicalData?> GetByIdAsync(int id)
+        public async Task<BE.Domain.Models.GeographicalData?> GetByIdAsync(int id)
         {
             _logger.LogInformation("Retrieving geographical data with ID: {Id}", id);
             var item = await _context.GeographicalData
-                .AsNoTracking()
                 .FirstOrDefaultAsync(g => g.Id == id);
             if (item == null)
             {
@@ -40,7 +37,7 @@ namespace BE.Repositories
             return item;
         }
 
-        public async Task<GeographicalData> CreateAsync(GeographicalData geographicalData)
+        public async Task<BE.Domain.Models.GeographicalData> CreateAsync(BE.Domain.Models.GeographicalData geographicalData)
         {
             _logger.LogInformation("Creating new geographical data entry");
             _context.GeographicalData.Add(geographicalData);
@@ -49,7 +46,7 @@ namespace BE.Repositories
             return geographicalData;
         }
 
-        public async Task<GeographicalData> UpdateAsync(GeographicalData geographicalData)
+        public async Task<BE.Domain.Models.GeographicalData> UpdateAsync(BE.Domain.Models.GeographicalData geographicalData)
         {
             _logger.LogInformation("Updating geographical data with ID: {Id}", geographicalData.Id);
             _context.Entry(geographicalData).State = EntityState.Modified;

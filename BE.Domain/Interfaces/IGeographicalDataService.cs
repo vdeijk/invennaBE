@@ -1,8 +1,8 @@
-using BE.DTOs;
+using BE.API.DTOs;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace BE.Interfaces
+namespace BE.Domain.Interfaces
 {
     /// <summary>
     /// Service interface for managing geographical data.

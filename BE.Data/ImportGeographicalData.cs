@@ -3,7 +3,7 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using CsvHelper.TypeConversion;
 using BE.Data;
-using BE.Models;
+using BE.Domain.Models;
 
 namespace BE.Import
 {

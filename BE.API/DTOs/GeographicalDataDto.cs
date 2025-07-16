@@ -1,4 +1,4 @@
-namespace BE.DTOs
+namespace BE.API.DTOs
 {
     public class GeographicalDataDto
     {

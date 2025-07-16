@@ -1,6 +1,6 @@
-using BE.DTOs;
-using BE.Interfaces;
-using BE.Models;
+using BE.API.DTOs;
+using BE.Domain.Interfaces;
+using BE.Domain.Models;
 using Microsoft.Extensions.Logging;
 
 namespace BE.Services
