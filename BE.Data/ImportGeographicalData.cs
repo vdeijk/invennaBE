@@ -7,6 +7,7 @@ using BE.Domain.Models;
 
 namespace BE.Import
 {
+    // Converter for nullable int fields
     public class NullableIntConverter : DefaultTypeConverter
     {
         public override object? ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
@@ -20,6 +21,8 @@ namespace BE.Import
             return null;
         }
     }
+
+    // Converter for nullable double fields
     public class NullableDoubleConverter : DefaultTypeConverter
     {
         public override object? ConvertFromString(string? text, IReaderRow row, MemberMapData memberMapData)
@@ -32,6 +35,7 @@ namespace BE.Import
         }
     }
 
+    // CSV mapping for GeographicalData
     public class GeographicalDataMap : ClassMap<GeographicalData>
     {
         public GeographicalDataMap()
@@ -61,6 +65,7 @@ namespace BE.Import
         }
     }
 
+    // Import logic
     public static class ImportGeographicalData
     {
         public static int ImportFromCsv(GeographicalDataContext db, string csvPath)
@@ -71,14 +76,13 @@ namespace BE.Import
                 return 0;
             }
 
-            var config = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)
+            var config = new CsvConfiguration(CultureInfo.InvariantCulture)
             {
                 Delimiter = ";",
                 BadDataFound = badData => Console.WriteLine($"Bad data found: {badData}"),
                 MissingFieldFound = null,
                 HeaderValidated = null,
                 IgnoreBlankLines = true
-                // IgnoreReadingExceptions and ReadingExceptionOccurred are not available in CsvHelper 30+
             };
 
             using var reader = new StreamReader(csvPath);

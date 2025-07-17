@@ -5,6 +5,8 @@ namespace BE.Data
 {
     public class GeographicalDataContext : DbContext
     {
+        public GeographicalDataContext() { }
+
         public GeographicalDataContext(DbContextOptions<GeographicalDataContext> options)
             : base(options)
         {
@@ -19,7 +21,7 @@ namespace BE.Data
             modelBuilder.Entity<GeographicalData>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                
+
                 entity.Property(e => e.Id)
                     .IsRequired()
                     .ValueGeneratedOnAdd();
@@ -115,7 +117,89 @@ namespace BE.Data
                     .HasDatabaseName("IX_GeographicalData_Address");
             });
 
-            // ...existing seed data and other configuration...
+            modelBuilder.Entity<GeographicalData>(entity =>
+{
+    entity.HasData(
+        new GeographicalData
+        {
+            Id = 1,
+            Openbareruimte = "Hoofdstraat",
+            Huisnummer = 1,
+            Huisletter = null,
+            Huisnummertoevoeging = null,
+            Postcode = "1234AB",
+            Woonplaats = "Amsterdam",
+            Gemeente = "Amsterdam",
+            Provincie = "Noord-Holland",
+            Nummeraanduiding = "1",
+            Verblijfsobjectgebruiksdoel = "Wonen",
+            Oppervlakteverblijfsobject = 100,
+            Verblijfsobjectstatus = "Actief",
+            ObjectId = "OBJ1",
+            ObjectType = "Pand",
+            Nevenadres = null,
+            Pandid = "PAND1",
+            Pandstatus = "Bestaand",
+            Pandbouwjaar = 1990,
+            X = 12345,
+            Y = 67890,
+            Lon = 4.895168,
+            Lat = 52.370216
+        },
+        new GeographicalData
+        {
+            Id = 2,
+            Openbareruimte = "Dorpsstraat",
+            Huisnummer = 2,
+            Huisletter = "A",
+            Huisnummertoevoeging = null,
+            Postcode = "5678CD",
+            Woonplaats = "Rotterdam",
+            Gemeente = "Rotterdam",
+            Provincie = "Zuid-Holland",
+            Nummeraanduiding = "2A",
+            Verblijfsobjectgebruiksdoel = "Wonen",
+            Oppervlakteverblijfsobject = 80,
+            Verblijfsobjectstatus = "Actief",
+            ObjectId = "OBJ2",
+            ObjectType = "Pand",
+            Nevenadres = null,
+            Pandid = "PAND2",
+            Pandstatus = "Bestaand",
+            Pandbouwjaar = 1980,
+            X = 54321,
+            Y = 98765,
+            Lon = 4.47917,
+            Lat = 51.9225
+        },
+        new GeographicalData
+        {
+            Id = 3,
+            Openbareruimte = "Kerkstraat",
+            Huisnummer = 3,
+            Huisletter = null,
+            Huisnummertoevoeging = 1,
+            Postcode = "9012EF",
+            Woonplaats = "Utrecht",
+            Gemeente = "Utrecht",
+            Provincie = "Utrecht",
+            Nummeraanduiding = "3-1",
+            Verblijfsobjectgebruiksdoel = "Wonen",
+            Oppervlakteverblijfsobject = 120,
+            Verblijfsobjectstatus = "Actief",
+            ObjectId = "OBJ3",
+            ObjectType = "Pand",
+            Nevenadres = null,
+            Pandid = "PAND3",
+            Pandstatus = "Bestaand",
+            Pandbouwjaar = 2000,
+            X = 11111,
+            Y = 22222,
+            Lon = 5.12142,
+            Lat = 52.09074
+        }
+    );
+});
         }
     }
 }
