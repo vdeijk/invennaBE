@@ -14,6 +14,13 @@ namespace BE.Domain.Interfaces
         Task<IEnumerable<GeographicalData>> GetAllAsync();
 
         /// <summary>
+        /// Gets a paged list of geographical data entities with optional filtering and sorting.
+        /// </summary>
+        /// <param name="parameters">Pagination and filtering parameters.</param>
+        /// <returns>Paged result of geographical data entities.</returns>
+        Task<PagedResult<GeographicalData>> GetPagedAsync(PaginationParameters parameters);
+
+        /// <summary>
         /// Gets a geographical data entity by its ID.
         /// </summary>
         /// <param name="id">The ID of the geographical data entity.</param>

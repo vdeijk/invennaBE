@@ -52,6 +52,11 @@ switch ($Command) {
         dotnet watch run
     }
     
+    "seed-data" {
+        Write-Host "Importing all geographical data..." -ForegroundColor Green
+        dotnet run --project BE.Data/DataImporter/DataImporter.csproj
+    }
+    
     default {
         Write-Host "Available commands:" -ForegroundColor Green
         Write-Host "  .\make.ps1 migration-add <name>   - Add a new migration" -ForegroundColor Yellow
@@ -64,6 +69,7 @@ switch ($Command) {
         Write-Host "  .\make.ps1 run                    - Run project" -ForegroundColor Yellow
         Write-Host "  .\make.ps1 test                   - Run tests" -ForegroundColor Yellow
         Write-Host "  .\make.ps1 dev                    - Run with hot reload" -ForegroundColor Yellow
+        Write-Host "  .\make.ps1 seed-data              - Import all CSV data to database" -ForegroundColor Yellow
         Write-Host ""
         Write-Host "Examples:" -ForegroundColor Cyan
         Write-Host "  .\make.ps1 migration-add AddUserTable" -ForegroundColor Gray

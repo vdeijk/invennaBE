@@ -18,7 +18,6 @@ builder.Services.AddApiVersioning(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
-// Add CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
@@ -45,7 +44,6 @@ builder.Services.AddScoped<BE.Domain.Interfaces.IGeographicalDataRepository, BE.
 
 var app = builder.Build();
 
-// Apply migrations or create database if it doesn't exist
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<BE.Data.GeographicalDataContext>();
@@ -58,7 +56,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/swagger/v1/swagger.json", "Geographical Data API v1");
-        options.RoutePrefix = string.Empty; // Swagger UI at app root
+        options.RoutePrefix = string.Empty;
     });
 }
 
