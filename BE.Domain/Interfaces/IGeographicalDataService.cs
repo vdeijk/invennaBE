@@ -1,4 +1,5 @@
 using BE.Domain.DTOs;
+using BE.Domain.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -43,5 +44,12 @@ namespace BE.Domain.Interfaces
         /// <param name="id">The ID of the geographical data item to delete.</param>
         /// <returns>True if deleted, false if not found.</returns>
         Task<bool> DeleteAsync(int id);
+
+        /// <summary>
+        /// Gets a paginated list of geographical data items with optional search and sorting.
+        /// </summary>
+        /// <param name="parameters">Pagination, search, and sorting parameters.</param>
+        /// <returns>A paginated result containing geographical data items.</returns>
+        Task<PagedResult<GeographicalDataDto>> GetPagedAsync(PaginationParameters parameters);
     }
 }

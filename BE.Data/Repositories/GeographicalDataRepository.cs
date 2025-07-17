@@ -35,7 +35,6 @@ namespace BE.Repositories
 
             var query = _context.GeographicalData.AsQueryable();
 
-            // Apply search filter
             if (!string.IsNullOrWhiteSpace(parameters.Search))
             {
                 var searchTerm = parameters.Search.ToLower();
@@ -46,7 +45,6 @@ namespace BE.Repositories
                     g.Gemeente.ToLower().Contains(searchTerm));
             }
 
-            // Apply sorting
             if (!string.IsNullOrWhiteSpace(parameters.SortBy))
             {
                 query = parameters.SortBy.ToLower() switch
@@ -66,18 +64,16 @@ namespace BE.Repositories
                     "gemeente" => parameters.SortDirection == SortDirection.Descending 
                         ? query.OrderByDescending(g => g.Gemeente)
                         : query.OrderBy(g => g.Gemeente),
-                    _ => query.OrderBy(g => g.Id) // Default sort
+                    _ => query.OrderBy(g => g.Id)
                 };
             }
             else
             {
-                query = query.OrderBy(g => g.Id); // Default sort
+                query = query.OrderBy(g => g.Id);
             }
 
-            // Get total count before pagination
             var totalCount = await query.CountAsync();
 
-            // Apply pagination
             var items = await query
                 .Skip((parameters.Page - 1) * parameters.PageSize)
                 .Take(parameters.PageSize)
@@ -107,22 +103,20 @@ namespace BE.Repositories
             return item;
         }
 
-        public async Task<BE.Domain.Models.GeographicalData> CreateAsync(BE.Domain.Models.GeographicalData geographicalData)
+        public Task<BE.Domain.Models.GeographicalData> CreateAsync(BE.Domain.Models.GeographicalData geographicalData)
         {
             _logger.LogInformation("Creating new geographical data entry");
             _context.GeographicalData.Add(geographicalData);
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("Created geographical data with ID: {Id}", geographicalData.Id);
-            return geographicalData;
+            _logger.LogInformation("Prepared geographical data for creation (pending save)");
+            return Task.FromResult(geographicalData);
         }
 
-        public async Task<BE.Domain.Models.GeographicalData> UpdateAsync(BE.Domain.Models.GeographicalData geographicalData)
+        public Task<BE.Domain.Models.GeographicalData> UpdateAsync(BE.Domain.Models.GeographicalData geographicalData)
         {
             _logger.LogInformation("Updating geographical data with ID: {Id}", geographicalData.Id);
             _context.Entry(geographicalData).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("Updated geographical data with ID: {Id}", geographicalData.Id);
-            return geographicalData;
+            _logger.LogInformation("Prepared geographical data for update (pending save)");
+            return Task.FromResult(geographicalData);
         }
 
         public async Task<bool> DeleteAsync(int id)
@@ -136,8 +130,7 @@ namespace BE.Repositories
             }
 
             _context.GeographicalData.Remove(geographicalData);
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("Deleted geographical data with ID: {Id}", id);
+            _logger.LogInformation("Prepared geographical data for deletion (pending save)");
             return true;
         }
 

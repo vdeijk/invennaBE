@@ -90,7 +90,6 @@ namespace BE.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<GeographicalDataDto>> CreateGeographicalData([FromBody] CreateGeographicalDataDto dto)
         {
-            // [ApiController] handles null and model validation automatically
             try
             {
                 var created = await _service.CreateAsync(dto);
@@ -193,60 +192,10 @@ namespace BE.API.Controllers
         {
             try
             {
-                // Model validation is automatically handled by [ApiController] attribute
                 _logger.LogInformation("Retrieving geographical data - Page: {Page}, Size: {Size}, Search: {Search}, Sort: {SortBy} {SortDirection}", 
                     parameters.Page, parameters.PageSize, parameters.Search, parameters.SortBy, parameters.SortDirection);
 
-                var allData = await _service.GetAllAsync();
-                var filteredData = allData.AsEnumerable();
-
-                // Apply search filter
-                if (!string.IsNullOrWhiteSpace(parameters.Search))
-                {
-                    var searchTerm = parameters.Search.ToLower();
-                    filteredData = filteredData.Where(x => 
-                        (x.Openbareruimte?.ToLower().Contains(searchTerm) ?? false) ||
-                        (x.Postcode?.ToLower().Contains(searchTerm) ?? false) ||
-                        (x.Woonplaats?.ToLower().Contains(searchTerm) ?? false) ||
-                        (x.Gemeente?.ToLower().Contains(searchTerm) ?? false));
-                }
-
-                // Apply sorting
-                if (!string.IsNullOrWhiteSpace(parameters.SortBy))
-                {
-                    filteredData = parameters.SortBy.ToLower() switch
-                    {
-                        "openbareruimte" => parameters.SortDirection == SortDirection.Descending 
-                            ? filteredData.OrderByDescending(x => x.Openbareruimte)
-                            : filteredData.OrderBy(x => x.Openbareruimte),
-                        "postcode" => parameters.SortDirection == SortDirection.Descending
-                            ? filteredData.OrderByDescending(x => x.Postcode)
-                            : filteredData.OrderBy(x => x.Postcode),
-                        "woonplaats" => parameters.SortDirection == SortDirection.Descending
-                            ? filteredData.OrderByDescending(x => x.Woonplaats)
-                            : filteredData.OrderBy(x => x.Woonplaats),
-                        "gemeente" => parameters.SortDirection == SortDirection.Descending
-                            ? filteredData.OrderByDescending(x => x.Gemeente)
-                            : filteredData.OrderBy(x => x.Gemeente),
-                        _ => parameters.SortDirection == SortDirection.Descending
-                            ? filteredData.OrderByDescending(x => x.Id)
-                            : filteredData.OrderBy(x => x.Id)
-                    };
-                }
-
-                var totalCount = filteredData.Count();
-                var pagedData = filteredData
-                    .Skip((parameters.Page - 1) * parameters.PageSize)
-                    .Take(parameters.PageSize)
-                    .ToList();
-
-                var result = new PagedResult<GeographicalDataDto>
-                {
-                    Items = pagedData,
-                    TotalCount = totalCount,
-                    Page = parameters.Page,
-                    PageSize = parameters.PageSize
-                };
+                var result = await _service.GetPagedAsync(parameters);
 
                 return Ok(result);
             }

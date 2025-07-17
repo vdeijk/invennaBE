@@ -18,6 +18,15 @@ builder.Services.AddApiVersioning(options =>
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+// Configure HTTPS redirection
+builder.Services.AddHttpsRedirection(options =>
+{
+    if (builder.Environment.IsDevelopment())
+    {
+        options.HttpsPort = 7129; // Match the HTTPS port in launchSettings.json
+    }
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
@@ -41,6 +50,7 @@ builder.Services.AddSwaggerGen(options =>
 
 builder.Services.AddScoped<BE.Domain.Interfaces.IGeographicalDataService, BE.Services.GeographicalDataService>();
 builder.Services.AddScoped<BE.Domain.Interfaces.IGeographicalDataRepository, BE.Repositories.GeographicalDataRepository>();
+builder.Services.AddScoped<BE.Domain.Interfaces.IUnitOfWork, BE.Data.UnitOfWork>();
 
 var app = builder.Build();
 
@@ -60,6 +70,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+// Configure HTTPS redirection with explicit port for development
 app.UseHttpsRedirection();
 
 // Enable CORS

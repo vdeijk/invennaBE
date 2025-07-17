@@ -7,47 +7,98 @@ namespace BE.Services
 {
     public class GeographicalDataService : IGeographicalDataService
     {
-        private readonly IGeographicalDataRepository _repository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly ILogger<GeographicalDataService> _logger;
 
-        public GeographicalDataService(IGeographicalDataRepository repository, ILogger<GeographicalDataService> logger)
+        public GeographicalDataService(IUnitOfWork unitOfWork, ILogger<GeographicalDataService> logger)
         {
-            _repository = repository;
+            _unitOfWork = unitOfWork;
             _logger = logger;
         }
 
         public async Task<IEnumerable<GeographicalDataDto>> GetAllAsync()
         {
-            var data = await _repository.GetAllAsync();
+            var data = await _unitOfWork.GeographicalData.GetAllAsync();
             return data.Select(MapToDto).ToList();
         }
 
         public async Task<GeographicalDataDto?> GetByIdAsync(int id)
         {
-            var item = await _repository.GetByIdAsync(id);
+            var item = await _unitOfWork.GeographicalData.GetByIdAsync(id);
             return item == null ? null : MapToDto(item);
         }
 
         public async Task<GeographicalDataDto> CreateAsync(CreateGeographicalDataDto dto)
         {
             var entity = MapToEntity(dto);
-            // Optionally add business logic/validation here
-            var created = await _repository.CreateAsync(entity);
-            return MapToDto(created);
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var created = await _unitOfWork.GeographicalData.CreateAsync(entity);
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
+                return MapToDto(created);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
         public async Task<GeographicalDataDto?> UpdateAsync(int id, UpdateGeographicalDataDto dto)
         {
             if (id != dto.Id) return null;
             var entity = MapToEntity(dto);
-            // Optionally add business logic/validation here
-            var updated = await _repository.UpdateAsync(entity);
-            return MapToDto(updated);
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var updated = await _unitOfWork.GeographicalData.UpdateAsync(entity);
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
+                return MapToDto(updated);
+            }
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            return await _repository.DeleteAsync(id);
+            await _unitOfWork.BeginTransactionAsync();
+            try
+            {
+                var result = await _unitOfWork.GeographicalData.DeleteAsync(id);
+                if (result)
+                {
+                    await _unitOfWork.SaveChangesAsync();
+                    await _unitOfWork.CommitTransactionAsync();
+                }
+                else
+                {
+                    await _unitOfWork.RollbackTransactionAsync();
+                }
+                return result;
+            }
+            catch
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
+        }
+
+        public async Task<PagedResult<GeographicalDataDto>> GetPagedAsync(PaginationParameters parameters)
+        {
+            var pagedResult = await _unitOfWork.GeographicalData.GetPagedAsync(parameters);
+            
+            return new PagedResult<GeographicalDataDto>
+            {
+                Items = pagedResult.Items.Select(MapToDto).ToList(),
+                TotalCount = pagedResult.TotalCount,
+                PageSize = pagedResult.PageSize
+            };
         }
 
         private GeographicalDataDto MapToDto(GeographicalData entity)
