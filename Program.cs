@@ -5,7 +5,6 @@ using BE.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Database configuration with environment-specific providers
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var databaseProvider = builder.Configuration.GetValue<string>("DatabaseProvider", "SQLite");
 
@@ -190,3 +189,5 @@ app.UseCors("AllowAngularApp");
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }

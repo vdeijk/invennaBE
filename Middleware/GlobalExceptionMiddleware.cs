@@ -34,7 +34,6 @@ namespace BE.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
-            // Check if response has already started
             if (context.Response.HasStarted)
             {
                 _logger.LogError("Cannot set response headers, response has already started for request: {RequestPath}", context.Request.Path);
@@ -48,35 +47,30 @@ namespace BE.Middleware
             switch (exception)
             {
                 case ArgumentException argEx:
-                    // Business validation failures
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     response.Title = "Validation Error";
                     response.Detail = argEx.Message;
                     break;
 
                 case KeyNotFoundException:
-                    // Entity not found
                     response.StatusCode = (int)HttpStatusCode.NotFound;
                     response.Title = "Resource Not Found";
                     response.Detail = "The requested resource was not found";
                     break;
 
                 case UnauthorizedAccessException:
-                    // Authorization failures
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     response.Title = "Unauthorized";
                     response.Detail = "You are not authorized to access this resource";
                     break;
 
                 case InvalidOperationException invOpEx:
-                    // Business rule violations
                     response.StatusCode = (int)HttpStatusCode.Conflict;
                     response.Title = "Business Rule Violation";
                     response.Detail = _environment.IsDevelopment() ? invOpEx.Message : "A business rule was violated";
                     break;
 
                 default:
-                    // All other exceptions
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     response.Title = "Internal Server Error";
                     response.Detail = _environment.IsDevelopment() 
@@ -85,16 +79,13 @@ namespace BE.Middleware
                     break;
             }
 
-            // Add trace ID for debugging
             response.TraceId = context.TraceIdentifier;
 
-            // Include stack trace in development
             if (_environment.IsDevelopment())
             {
                 response.StackTrace = exception.StackTrace;
             }
 
-            // Set status code if response hasn't started
             if (!context.Response.HasStarted)
             {
                 context.Response.StatusCode = response.StatusCode;
@@ -105,7 +96,6 @@ namespace BE.Middleware
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
 
-            // Only write to response if it hasn't started
             if (!context.Response.HasStarted)
             {
                 await context.Response.WriteAsync(jsonResponse);
