@@ -25,10 +25,14 @@ namespace BE.Services
             return data.Select(MapToDto).ToList();
         }
 
-        public async Task<GeographicalDataDto?> GetByIdAsync(int id)
+        public async Task<GeographicalDataDto> GetByIdAsync(int id)
         {
             var item = await _unitOfWork.GeographicalData.GetByIdAsync(id);
-            return item == null ? null : MapToDto(item);
+            if (item == null)
+            {
+                throw new KeyNotFoundException($"Geographical data with ID {id} not found");
+            }
+            return MapToDto(item);
         }
 
         public async Task<GeographicalDataDto> CreateAsync(CreateGeographicalDataDto dto)
@@ -66,12 +70,12 @@ namespace BE.Services
             }
         }
 
-        public async Task<GeographicalDataDto?> UpdateAsync(int id, UpdateGeographicalDataDto dto)
+        public async Task<GeographicalDataDto> UpdateAsync(int id, UpdateGeographicalDataDto dto)
         {
             if (id != dto.Id) 
             {
                 _logger.LogWarning("Update failed: ID mismatch. URL ID: {UrlId}, DTO ID: {DtoId}", id, dto.Id);
-                return null;
+                throw new ArgumentException("ID mismatch between URL and request body");
             }
 
             var validationResult = await _businessValidator.ValidateUpdateAsync(dto);
@@ -94,6 +98,10 @@ namespace BE.Services
             try
             {
                 var updated = await _unitOfWork.GeographicalData.UpdateAsync(entity);
+                if (updated == null)
+                {
+                    throw new KeyNotFoundException($"Geographical data with ID {id} not found");
+                }
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
                 
@@ -107,22 +115,18 @@ namespace BE.Services
             }
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task DeleteAsync(int id)
         {
             await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var result = await _unitOfWork.GeographicalData.DeleteAsync(id);
-                if (result)
+                if (!result)
                 {
-                    await _unitOfWork.SaveChangesAsync();
-                    await _unitOfWork.CommitTransactionAsync();
+                    throw new KeyNotFoundException($"Geographical data with ID {id} not found");
                 }
-                else
-                {
-                    await _unitOfWork.RollbackTransactionAsync();
-                }
-                return result;
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
             }
             catch
             {

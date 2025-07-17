@@ -68,6 +68,8 @@ builder.Services.AddScoped<BE.Domain.Interfaces.IBusinessValidator, BE.Services.
 
 var app = builder.Build();
 
+app.UseMiddleware<BE.Middleware.GlobalExceptionMiddleware>();
+
 app.Use(async (context, next) =>
 {
     var logger = app.Services.GetRequiredService<ILogger<Program>>();
@@ -77,6 +79,29 @@ app.Use(async (context, next) =>
         context.Request.QueryString);
     await next();
 });
+
+app.Use(async (context, next) =>
+{
+    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+    context.Response.Headers["X-Frame-Options"] = "DENY";
+    
+    context.Response.Headers["X-API-Version"] = "1.0";
+    context.Response.Headers["X-API-Name"] = "Geographical-Data-API";
+    
+    await next();
+});
+
+if (app.Environment.IsDevelopment())
+{
+    app.Use(async (context, next) =>
+    {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        await next();
+        stopwatch.Stop();
+        
+        context.Response.Headers["X-Response-Time-Ms"] = stopwatch.ElapsedMilliseconds.ToString();
+    });
+}
 
 using (var scope = app.Services.CreateScope())
 {

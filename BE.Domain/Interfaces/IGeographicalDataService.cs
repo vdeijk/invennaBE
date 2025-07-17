@@ -20,8 +20,9 @@ namespace BE.Domain.Interfaces
         /// Gets a geographical data item by its ID.
         /// </summary>
         /// <param name="id">The ID of the geographical data item.</param>
-        /// <returns>The geographical data item, or null if not found.</returns>
-        Task<GeographicalDataDto?> GetByIdAsync(int id);
+        /// <returns>The geographical data item.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown when the item is not found.</exception>
+        Task<GeographicalDataDto> GetByIdAsync(int id);
 
         /// <summary>
         /// Creates a new geographical data item.
@@ -35,15 +36,17 @@ namespace BE.Domain.Interfaces
         /// </summary>
         /// <param name="id">The ID of the geographical data item to update.</param>
         /// <param name="dto">The updated data.</param>
-        /// <returns>The updated geographical data item, or null if not found.</returns>
-        Task<GeographicalDataDto?> UpdateAsync(int id, UpdateGeographicalDataDto dto);
+        /// <returns>The updated geographical data item.</returns>
+        /// <exception cref="KeyNotFoundException">Thrown when the item is not found.</exception>
+        /// <exception cref="ArgumentException">Thrown when validation fails or ID mismatch.</exception>
+        Task<GeographicalDataDto> UpdateAsync(int id, UpdateGeographicalDataDto dto);
 
         /// <summary>
         /// Deletes a geographical data item by its ID.
         /// </summary>
         /// <param name="id">The ID of the geographical data item to delete.</param>
-        /// <returns>True if deleted, false if not found.</returns>
-        Task<bool> DeleteAsync(int id);
+        /// <exception cref="KeyNotFoundException">Thrown when the item is not found.</exception>
+        Task DeleteAsync(int id);
 
         /// <summary>
         /// Gets a paginated list of geographical data items with optional search and sorting.

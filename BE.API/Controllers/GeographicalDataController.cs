@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using BE.Domain.Interfaces;
 using BE.Domain.DTOs;
 using BE.Domain.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
 namespace BE.API.Controllers
@@ -32,19 +32,9 @@ namespace BE.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<GeographicalDataDto>>> GetGeographicalData()
         {
-            try
-            {
-                _logger.LogInformation("Retrieving all geographical data");
-                var dtoList = await _service.GetAllAsync();
-                return Ok(dtoList);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving geographical data");
-                return StatusCode(500, Problem(
-                    detail: "Internal server error while retrieving geographical data",
-                    statusCode: 500));
-            }
+            _logger.LogInformation("Retrieving all geographical data");
+            var dtoList = await _service.GetAllAsync();
+            return Ok(dtoList);
         }
 
         /// <summary>
@@ -58,26 +48,9 @@ namespace BE.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<GeographicalDataDto>> GetGeographicalData(int id)
         {
-            try
-            {
-                _logger.LogInformation("Retrieving geographical data with ID: {Id}", id);
-                var dto = await _service.GetByIdAsync(id);
-                if (dto == null)
-                {
-                    _logger.LogWarning("Geographical data with ID {Id} not found", id);
-                    return NotFound(Problem(
-                        detail: $"Geographical data with ID {id} not found",
-                        statusCode: 404));
-                }
-                return Ok(dto);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving geographical data with ID: {Id}", id);
-                return StatusCode(500, Problem(
-                    detail: "Internal server error while retrieving geographical data",
-                    statusCode: 500));
-            }
+            _logger.LogInformation("Retrieving geographical data with ID: {Id}", id);
+            var dto = await _service.GetByIdAsync(id);
+            return Ok(dto);
         }
         /// <summary>
         /// Creates a new geographical data item.
@@ -90,19 +63,9 @@ namespace BE.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<GeographicalDataDto>> CreateGeographicalData([FromBody] CreateGeographicalDataDto dto)
         {
-            try
-            {
-                var created = await _service.CreateAsync(dto);
-                _logger.LogInformation("Created new geographical data with ID: {Id}", created.Id);
-                return CreatedAtAction(nameof(GetGeographicalData), new { id = created.Id }, created);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error creating geographical data");
-                return StatusCode(500, Problem(
-                    detail: "Internal server error while creating geographical data",
-                    statusCode: 500));
-            }
+            var created = await _service.CreateAsync(dto);
+            _logger.LogInformation("Created new geographical data with ID: {Id}", created.Id);
+            return CreatedAtAction(nameof(GetGeographicalData), new { id = created.Id }, created);
         }
 
         /// <summary>
@@ -124,26 +87,10 @@ namespace BE.API.Controllers
                     detail: "ID mismatch",
                     statusCode: 400));
             }
-            try
-            {
-                var updated = await _service.UpdateAsync(id, dto);
-                if (updated == null)
-                {
-                    _logger.LogWarning("Geographical data with ID {Id} not found for update", id);
-                    return NotFound(Problem(
-                        detail: $"Geographical data with ID {id} not found",
-                        statusCode: 404));
-                }
-                _logger.LogInformation("Updated geographical data with ID: {Id}", id);
-                return Ok(updated);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating geographical data with ID: {Id}", id);
-                return StatusCode(500, Problem(
-                    detail: "Internal server error while updating geographical data",
-                    statusCode: 500));
-            }
+
+            var updated = await _service.UpdateAsync(id, dto);
+            _logger.LogInformation("Updated geographical data with ID: {Id}", id);
+            return Ok(updated);
         }
 
         /// <summary>
@@ -157,26 +104,9 @@ namespace BE.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteGeographicalData(int id)
         {
-            try
-            {
-                var deleted = await _service.DeleteAsync(id);
-                if (!deleted)
-                {
-                    _logger.LogWarning("Geographical data with ID {Id} not found for deletion", id);
-                    return NotFound(Problem(
-                        detail: $"Geographical data with ID {id} not found",
-                        statusCode: 404));
-                }
-                _logger.LogInformation("Deleted geographical data with ID: {Id}", id);
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting geographical data with ID: {Id}", id);
-                return StatusCode(500, Problem(
-                    detail: "Internal server error while deleting geographical data",
-                    statusCode: 500));
-            }
+            await _service.DeleteAsync(id);
+            _logger.LogInformation("Deleted geographical data with ID: {Id}", id);
+            return NoContent();
         }
 
         /// <summary>
@@ -190,22 +120,12 @@ namespace BE.API.Controllers
         [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PagedResult<GeographicalDataDto>>> GetGeographicalDataPaged([FromQuery] PaginationParameters parameters)
         {
-            try
-            {
-                _logger.LogInformation("Retrieving geographical data - Page: {Page}, Size: {Size}, Search: {Search}, Sort: {SortBy} {SortDirection}", 
-                    parameters.Page, parameters.PageSize, parameters.Search, parameters.SortBy, parameters.SortDirection);
+            _logger.LogInformation("Retrieving geographical data - Page: {Page}, Size: {Size}, Search: {Search}, Sort: {SortBy} {SortDirection}", 
+                parameters.Page, parameters.PageSize, parameters.Search, parameters.SortBy, parameters.SortDirection);
 
-                var result = await _service.GetPagedAsync(parameters);
+            var result = await _service.GetPagedAsync(parameters);
 
-                return Ok(result);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error retrieving paginated geographical data");
-                return StatusCode(500, Problem(
-                    detail: "Internal server error while retrieving geographical data",
-                    statusCode: 500));
-            }
+            return Ok(result);
         }
     }
 }
