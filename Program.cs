@@ -2,7 +2,11 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dataPath = Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..", "BE.Data", "GeographicalData.db"));
+var dataPath = Path.Combine("BE.Data", "geodata.db");
+builder.Services.AddDbContext<BE.Data.GeographicalDataContext>(options =>
+{
+    options.UseSqlite($"Data Source={dataPath}");
+});
 
 builder.Services.AddApiVersioning(options =>
 {
@@ -31,6 +35,13 @@ builder.Services.AddScoped<BE.Domain.Interfaces.IGeographicalDataService, BE.Ser
 builder.Services.AddScoped<BE.Domain.Interfaces.IGeographicalDataRepository, BE.Repositories.GeographicalDataRepository>();
 
 var app = builder.Build();
+
+// Apply migrations or create database if it doesn't exist
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider.GetRequiredService<BE.Data.GeographicalDataContext>();
+    dbContext.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {
