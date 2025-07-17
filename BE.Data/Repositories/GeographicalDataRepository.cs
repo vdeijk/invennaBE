@@ -4,7 +4,8 @@ using BE.Data;
 using BE.Domain.Interfaces;
 using BE.Domain.Models;
 using BE.Domain.DTOs;
-using GeographicalDataModel = BE.Domain.Models.GeographicalData;
+using BE.Domain.Entities;
+using GeographicalDataModel = BE.Domain.Entities.GeographicalDataEntity;
 
 namespace BE.Repositories
 {
@@ -19,7 +20,7 @@ namespace BE.Repositories
             _logger = logger;
         }
 
-        public async Task<IEnumerable<BE.Domain.Models.GeographicalData>> GetAllAsync()
+        public async Task<IEnumerable<GeographicalDataEntity>> GetAllAsync()
         {
             _logger.LogInformation("Retrieving all geographical data from the database");
             var result = await _context.GeographicalData
@@ -28,7 +29,7 @@ namespace BE.Repositories
             return result;
         }
 
-        public async Task<PagedResult<BE.Domain.Models.GeographicalData>> GetPagedAsync(PaginationParameters parameters)
+        public async Task<PagedResult<GeographicalDataEntity>> GetPagedAsync(PaginationParameters parameters)
         {
             _logger.LogInformation("Retrieving paged geographical data: Page {Page}, Size {PageSize}, Search: {Search}", 
                 parameters.Page, parameters.PageSize, parameters.Search);
@@ -82,7 +83,7 @@ namespace BE.Repositories
             _logger.LogInformation("Retrieved {Count} items out of {Total} total for page {Page}", 
                 items.Count, totalCount, parameters.Page);
 
-            return new PagedResult<BE.Domain.Models.GeographicalData>
+            return new PagedResult<GeographicalDataEntity>
             {
                 Items = items,
                 TotalCount = totalCount,
@@ -91,7 +92,7 @@ namespace BE.Repositories
             };
         }
 
-        public async Task<BE.Domain.Models.GeographicalData?> GetByIdAsync(int id)
+        public async Task<GeographicalDataEntity?> GetByIdAsync(int id)
         {
             _logger.LogInformation("Retrieving geographical data with ID: {Id}", id);
             var item = await _context.GeographicalData
@@ -103,7 +104,7 @@ namespace BE.Repositories
             return item;
         }
 
-        public Task<BE.Domain.Models.GeographicalData> CreateAsync(BE.Domain.Models.GeographicalData geographicalData)
+        public Task<GeographicalDataEntity> CreateAsync(GeographicalDataEntity geographicalData)
         {
             _logger.LogInformation("Creating new geographical data entry");
             _context.GeographicalData.Add(geographicalData);
@@ -111,7 +112,7 @@ namespace BE.Repositories
             return Task.FromResult(geographicalData);
         }
 
-        public Task<BE.Domain.Models.GeographicalData> UpdateAsync(BE.Domain.Models.GeographicalData geographicalData)
+        public Task<GeographicalDataEntity> UpdateAsync(GeographicalDataEntity geographicalData)
         {
             _logger.LogInformation("Updating geographical data with ID: {Id}", geographicalData.Id);
             _context.Entry(geographicalData).State = EntityState.Modified;

@@ -1,6 +1,7 @@
 using BE.Domain.DTOs;
 using BE.Domain.Interfaces;
 using BE.Domain.Models;
+using BE.Domain.Entities;
 using Microsoft.Extensions.Logging;
 
 namespace BE.Services
@@ -101,7 +102,7 @@ namespace BE.Services
             };
         }
 
-        private GeographicalDataDto MapToDto(GeographicalData entity)
+        private GeographicalDataDto MapToDto(GeographicalDataEntity entity)
         {
             return new GeographicalDataDto
             {
@@ -131,9 +132,9 @@ namespace BE.Services
             };
         }
 
-        private GeographicalData MapToEntity(CreateGeographicalDataDto dto)
+        private GeographicalDataEntity MapToEntity(CreateGeographicalDataDto dto)
         {
-            return new GeographicalData
+            return new GeographicalDataEntity
             {
                 Openbareruimte = dto.Openbareruimte,
                 Huisnummer = dto.Huisnummer,
@@ -160,7 +161,7 @@ namespace BE.Services
             };
         }
 
-        private GeographicalData MapToEntity(UpdateGeographicalDataDto dto)
+        private GeographicalDataEntity MapToEntity(UpdateGeographicalDataDto dto)
         {
             var entity = MapToEntity((CreateGeographicalDataDto)dto);
             entity.Id = dto.Id;

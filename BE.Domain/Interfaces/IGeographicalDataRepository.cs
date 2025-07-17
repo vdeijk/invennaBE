@@ -1,4 +1,5 @@
 using BE.Domain.Models;
+using BE.Domain.Entities;
 
 namespace BE.Domain.Interfaces
 {
@@ -11,35 +12,35 @@ namespace BE.Domain.Interfaces
         /// Gets all geographical data entities.
         /// </summary>
         /// <returns>List of all geographical data entities.</returns>
-        Task<IEnumerable<GeographicalData>> GetAllAsync();
+        Task<IEnumerable<GeographicalDataEntity>> GetAllAsync();
 
         /// <summary>
         /// Gets a paged list of geographical data entities with optional filtering and sorting.
         /// </summary>
         /// <param name="parameters">Pagination and filtering parameters.</param>
         /// <returns>Paged result of geographical data entities.</returns>
-        Task<PagedResult<GeographicalData>> GetPagedAsync(PaginationParameters parameters);
+        Task<PagedResult<GeographicalDataEntity>> GetPagedAsync(PaginationParameters parameters);
 
         /// <summary>
         /// Gets a geographical data entity by its ID.
         /// </summary>
         /// <param name="id">The ID of the geographical data entity.</param>
         /// <returns>The geographical data entity, or null if not found.</returns>
-        Task<GeographicalData?> GetByIdAsync(int id);
+        Task<GeographicalDataEntity?> GetByIdAsync(int id);
 
         /// <summary>
         /// Creates a new geographical data entity.
         /// </summary>
         /// <param name="geographicalData">The entity to create.</param>
         /// <returns>The created geographical data entity.</returns>
-        Task<GeographicalData> CreateAsync(GeographicalData geographicalData);
+        Task<GeographicalDataEntity> CreateAsync(GeographicalDataEntity geographicalData);
 
         /// <summary>
         /// Updates an existing geographical data entity.
         /// </summary>
         /// <param name="geographicalData">The updated entity.</param>
         /// <returns>The updated geographical data entity.</returns>
-        Task<GeographicalData> UpdateAsync(GeographicalData geographicalData);
+        Task<GeographicalDataEntity> UpdateAsync(GeographicalDataEntity geographicalData);
 
         /// <summary>
         /// Deletes a geographical data entity by its ID.

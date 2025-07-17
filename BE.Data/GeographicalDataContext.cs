@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using BE.Domain.Models;
+using BE.Domain.Entities;
 
 namespace BE.Data
 {
@@ -12,13 +12,13 @@ namespace BE.Data
         {
         }
 
-        public DbSet<BE.Domain.Models.GeographicalData> GeographicalData { get; set; } = null!;
+        public DbSet<GeographicalDataEntity> GeographicalData { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<GeographicalData>(entity =>
+            modelBuilder.Entity<GeographicalDataEntity>(entity =>
             {
                 entity.HasKey(e => e.Id);
 
@@ -117,10 +117,10 @@ namespace BE.Data
                     .HasDatabaseName("IX_GeographicalData_Address");
             });
 
-            modelBuilder.Entity<GeographicalData>(entity =>
+            modelBuilder.Entity<GeographicalDataEntity>(entity =>
 {
     entity.HasData(
-        new GeographicalData
+        new GeographicalDataEntity
         {
             Id = 1,
             Openbareruimte = "Hoofdstraat",
@@ -146,7 +146,7 @@ namespace BE.Data
             Lon = 4.895168,
             Lat = 52.370216
         },
-        new GeographicalData
+        new GeographicalDataEntity
         {
             Id = 2,
             Openbareruimte = "Dorpsstraat",
@@ -172,7 +172,7 @@ namespace BE.Data
             Lon = 4.47917,
             Lat = 51.9225
         },
-        new GeographicalData
+        new GeographicalDataEntity
         {
             Id = 3,
             Openbareruimte = "Kerkstraat",

@@ -2,6 +2,7 @@
 using CsvHelper;
 using Microsoft.EntityFrameworkCore;
 using BE.Data;
+using BE.Domain.Entities;
 using BE.Domain.Models;
 
 namespace DataImporter;
@@ -35,7 +36,7 @@ class Program
         var records = csv.GetRecords<dynamic>().ToList();
         Console.WriteLine($"Found {records.Count} records to import...");
 
-        var batch = new List<GeographicalData>();
+        var batch = new List<GeographicalDataEntity>();
         int processed = 0;
 
         foreach (var record in records)
@@ -45,7 +46,7 @@ class Program
                 var dict = record as IDictionary<string, object>;
                 if (dict == null) continue;
                 
-                var geoData = new GeographicalData
+                var geoData = new GeographicalDataEntity
                 {
                     Openbareruimte = dict["openbareruimte"]?.ToString() ?? "",
                     Huisnummer = int.TryParse(dict["huisnummer"]?.ToString(), out var hn) ? hn : 0,

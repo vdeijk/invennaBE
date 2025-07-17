@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,15 +16,25 @@ builder.Services.AddApiVersioning(options =>
     options.ReportApiVersions = true;
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = context =>
+        {
+            var logger = context.HttpContext.RequestServices.GetRequiredService<ILogger<Program>>();
+            logger.LogWarning("Model validation failed: {Errors}", 
+                string.Join(", ", context.ModelState.SelectMany(ms => ms.Value?.Errors.Select(e => $"{ms.Key}: {e.ErrorMessage}") ?? Enumerable.Empty<string>())));
+            
+            return new BadRequestObjectResult(context.ModelState);
+        };
+    });
 builder.Services.AddEndpointsApiExplorer();
 
-// Configure HTTPS redirection
 builder.Services.AddHttpsRedirection(options =>
 {
     if (builder.Environment.IsDevelopment())
     {
-        options.HttpsPort = 7129; // Match the HTTPS port in launchSettings.json
+        options.HttpsPort = 7129; 
     }
 });
 
@@ -54,6 +65,17 @@ builder.Services.AddScoped<BE.Domain.Interfaces.IUnitOfWork, BE.Data.UnitOfWork>
 
 var app = builder.Build();
 
+// Add HTTP request logging
+app.Use(async (context, next) =>
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation("Request: {Method} {Path} {QueryString}", 
+        context.Request.Method, 
+        context.Request.Path, 
+        context.Request.QueryString);
+    await next();
+});
+
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<BE.Data.GeographicalDataContext>();
@@ -70,10 +92,11 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-// Configure HTTPS redirection with explicit port for development
-app.UseHttpsRedirection();
+if (!builder.Environment.IsDevelopment() || builder.Configuration.GetValue<bool>("EnableHttpsRedirection", false))
+{
+    app.UseHttpsRedirection();
+}
 
-// Enable CORS
 app.UseCors("AllowAngularApp");
 
 app.MapControllers();
