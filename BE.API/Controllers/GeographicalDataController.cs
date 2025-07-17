@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using BE.Domain.Interfaces;
 using BE.Domain.DTOs;
+using BE.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -175,6 +176,85 @@ namespace BE.API.Controllers
                 _logger.LogError(ex, "Error deleting geographical data with ID: {Id}", id);
                 return StatusCode(500, Problem(
                     detail: "Internal server error while deleting geographical data",
+                    statusCode: 500));
+            }
+        }
+
+        /// <summary>
+        /// Retrieves geographical data items with pagination, search, and sorting.
+        /// </summary>
+        /// <param name="parameters">Pagination parameters including page, size, search, and sort options</param>
+        /// <returns>Paginated list of geographical data items with metadata.</returns>
+        [HttpGet("paged")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<ActionResult<PagedResult<GeographicalDataDto>>> GetGeographicalDataPaged([FromQuery] PaginationParameters parameters)
+        {
+            try
+            {
+                // Model validation is automatically handled by [ApiController] attribute
+                _logger.LogInformation("Retrieving geographical data - Page: {Page}, Size: {Size}, Search: {Search}, Sort: {SortBy} {SortDirection}", 
+                    parameters.Page, parameters.PageSize, parameters.Search, parameters.SortBy, parameters.SortDirection);
+
+                var allData = await _service.GetAllAsync();
+                var filteredData = allData.AsEnumerable();
+
+                // Apply search filter
+                if (!string.IsNullOrWhiteSpace(parameters.Search))
+                {
+                    var searchTerm = parameters.Search.ToLower();
+                    filteredData = filteredData.Where(x => 
+                        (x.Openbareruimte?.ToLower().Contains(searchTerm) ?? false) ||
+                        (x.Postcode?.ToLower().Contains(searchTerm) ?? false) ||
+                        (x.Woonplaats?.ToLower().Contains(searchTerm) ?? false) ||
+                        (x.Gemeente?.ToLower().Contains(searchTerm) ?? false));
+                }
+
+                // Apply sorting
+                if (!string.IsNullOrWhiteSpace(parameters.SortBy))
+                {
+                    filteredData = parameters.SortBy.ToLower() switch
+                    {
+                        "openbareruimte" => parameters.SortDirection == SortDirection.Descending 
+                            ? filteredData.OrderByDescending(x => x.Openbareruimte)
+                            : filteredData.OrderBy(x => x.Openbareruimte),
+                        "postcode" => parameters.SortDirection == SortDirection.Descending
+                            ? filteredData.OrderByDescending(x => x.Postcode)
+                            : filteredData.OrderBy(x => x.Postcode),
+                        "woonplaats" => parameters.SortDirection == SortDirection.Descending
+                            ? filteredData.OrderByDescending(x => x.Woonplaats)
+                            : filteredData.OrderBy(x => x.Woonplaats),
+                        "gemeente" => parameters.SortDirection == SortDirection.Descending
+                            ? filteredData.OrderByDescending(x => x.Gemeente)
+                            : filteredData.OrderBy(x => x.Gemeente),
+                        _ => parameters.SortDirection == SortDirection.Descending
+                            ? filteredData.OrderByDescending(x => x.Id)
+                            : filteredData.OrderBy(x => x.Id)
+                    };
+                }
+
+                var totalCount = filteredData.Count();
+                var pagedData = filteredData
+                    .Skip((parameters.Page - 1) * parameters.PageSize)
+                    .Take(parameters.PageSize)
+                    .ToList();
+
+                var result = new PagedResult<GeographicalDataDto>
+                {
+                    Items = pagedData,
+                    TotalCount = totalCount,
+                    Page = parameters.Page,
+                    PageSize = parameters.PageSize
+                };
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving paginated geographical data");
+                return StatusCode(500, Problem(
+                    detail: "Internal server error while retrieving geographical data",
                     statusCode: 500));
             }
         }

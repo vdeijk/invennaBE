@@ -27,11 +27,12 @@
     <ProjectReference Include="BE.Services/BE.Services.csproj" />
   </ItemGroup>
 
-  <!-- <ItemGroup>
+  <!-- Exclude source files from sub-project directories to prevent duplicate compilation -->
+  <ItemGroup>
     <Compile Remove="BE.API/**/*.cs" />
     <Compile Remove="BE.Data/**/*.cs" />
     <Compile Remove="BE.Domain/**/*.cs" />
     <Compile Remove="BE.Services/**/*.cs" />
     <Compile Remove="BE.Tests/**/*.cs" />
-  </ItemGroup> -->
+  </ItemGroup>
 </Project>

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using BE.Data;
 using BE.Domain.Interfaces;
 using BE.Domain.Models;
+using BE.Domain.DTOs;
+using GeographicalDataModel = BE.Domain.Models.GeographicalData;
 
 namespace BE.Repositories
 {
@@ -24,6 +26,73 @@ namespace BE.Repositories
                 .ToListAsync();
             _logger.LogInformation("Retrieved {Count} geographical data items", result.Count);
             return result;
+        }
+
+        public async Task<PagedResult<BE.Domain.Models.GeographicalData>> GetPagedAsync(PaginationParameters parameters)
+        {
+            _logger.LogInformation("Retrieving paged geographical data: Page {Page}, Size {PageSize}, Search: {Search}", 
+                parameters.Page, parameters.PageSize, parameters.Search);
+
+            var query = _context.GeographicalData.AsQueryable();
+
+            // Apply search filter
+            if (!string.IsNullOrWhiteSpace(parameters.Search))
+            {
+                var searchTerm = parameters.Search.ToLower();
+                query = query.Where(g => 
+                    g.Openbareruimte.ToLower().Contains(searchTerm) ||
+                    g.Postcode.ToLower().Contains(searchTerm) ||
+                    g.Woonplaats.ToLower().Contains(searchTerm) ||
+                    g.Gemeente.ToLower().Contains(searchTerm));
+            }
+
+            // Apply sorting
+            if (!string.IsNullOrWhiteSpace(parameters.SortBy))
+            {
+                query = parameters.SortBy.ToLower() switch
+                {
+                    "openbareruimte" => parameters.SortDirection == SortDirection.Descending 
+                        ? query.OrderByDescending(g => g.Openbareruimte)
+                        : query.OrderBy(g => g.Openbareruimte),
+                    "huisnummer" => parameters.SortDirection == SortDirection.Descending 
+                        ? query.OrderByDescending(g => g.Huisnummer)
+                        : query.OrderBy(g => g.Huisnummer),
+                    "postcode" => parameters.SortDirection == SortDirection.Descending 
+                        ? query.OrderByDescending(g => g.Postcode)
+                        : query.OrderBy(g => g.Postcode),
+                    "woonplaats" => parameters.SortDirection == SortDirection.Descending 
+                        ? query.OrderByDescending(g => g.Woonplaats)
+                        : query.OrderBy(g => g.Woonplaats),
+                    "gemeente" => parameters.SortDirection == SortDirection.Descending 
+                        ? query.OrderByDescending(g => g.Gemeente)
+                        : query.OrderBy(g => g.Gemeente),
+                    _ => query.OrderBy(g => g.Id) // Default sort
+                };
+            }
+            else
+            {
+                query = query.OrderBy(g => g.Id); // Default sort
+            }
+
+            // Get total count before pagination
+            var totalCount = await query.CountAsync();
+
+            // Apply pagination
+            var items = await query
+                .Skip((parameters.Page - 1) * parameters.PageSize)
+                .Take(parameters.PageSize)
+                .ToListAsync();
+
+            _logger.LogInformation("Retrieved {Count} items out of {Total} total for page {Page}", 
+                items.Count, totalCount, parameters.Page);
+
+            return new PagedResult<BE.Domain.Models.GeographicalData>
+            {
+                Items = items,
+                TotalCount = totalCount,
+                Page = parameters.Page,
+                PageSize = parameters.PageSize
+            };
         }
 
         public async Task<BE.Domain.Models.GeographicalData?> GetByIdAsync(int id)
