@@ -14,7 +14,7 @@ class Program
         var csvPath = @"C:\Users\Gebruiker\repos\Invenna\BE\BE\BE.Data\Data\geographicaldata-fixed.csv";
 
         var options = new DbContextOptionsBuilder<GeographicalDataContext>()
-            .UseSqlite("Data Source=C:\\Users\\Gebruiker\\repos\\Invenna\\BE\\BE\\BE.Data\\geodata.db")
+            .UseSqlite("C:/Users/Gebruiker/repos/Invenna/BE/BE/BE.Data/Data/geodata.db")
             .Options;
 
         using var context = new GeographicalDataContext(options);

@@ -1,10 +1,7 @@
 using System.Net;
 using System.Text.Json;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Hosting;
 
-namespace BE.API.Middleware
+namespace BE.Middleware
 {
     public class GlobalExceptionMiddleware
     {
@@ -37,6 +34,12 @@ namespace BE.API.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
+            if (context.Response.HasStarted)
+            {
+                _logger.LogError("Cannot set response headers, response has already started for request: {RequestPath}", context.Request.Path);
+                return;
+            }
+
             context.Response.ContentType = "application/json";
 
             var response = new ErrorResponse();
@@ -44,35 +47,30 @@ namespace BE.API.Middleware
             switch (exception)
             {
                 case ArgumentException argEx:
-                    // Business validation failures
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     response.Title = "Validation Error";
                     response.Detail = argEx.Message;
                     break;
 
                 case KeyNotFoundException:
-                    // Entity not found
                     response.StatusCode = (int)HttpStatusCode.NotFound;
                     response.Title = "Resource Not Found";
                     response.Detail = "The requested resource was not found";
                     break;
 
                 case UnauthorizedAccessException:
-                    // Authorization failures
                     response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     response.Title = "Unauthorized";
                     response.Detail = "You are not authorized to access this resource";
                     break;
 
                 case InvalidOperationException invOpEx:
-                    // Business rule violations
                     response.StatusCode = (int)HttpStatusCode.Conflict;
                     response.Title = "Business Rule Violation";
                     response.Detail = _environment.IsDevelopment() ? invOpEx.Message : "A business rule was violated";
                     break;
 
                 default:
-                    // All other exceptions
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     response.Title = "Internal Server Error";
                     response.Detail = _environment.IsDevelopment() 
@@ -81,23 +79,27 @@ namespace BE.API.Middleware
                     break;
             }
 
-            // Add trace ID for debugging
             response.TraceId = context.TraceIdentifier;
 
-            // Include stack trace in development
             if (_environment.IsDevelopment())
             {
                 response.StackTrace = exception.StackTrace;
             }
 
-            context.Response.StatusCode = response.StatusCode;
+            if (!context.Response.HasStarted)
+            {
+                context.Response.StatusCode = response.StatusCode;
+            }
 
             var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
 
-            await context.Response.WriteAsync(jsonResponse);
+            if (!context.Response.HasStarted)
+            {
+                await context.Response.WriteAsync(jsonResponse);
+            }
         }
     }
 

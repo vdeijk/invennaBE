@@ -142,7 +142,14 @@ using (var scope = app.Services.CreateScope())
             var connectionStringForLog = connectionString ?? Path.Combine("BE.Data", "Data", "geodata.db");
             logger.LogInformation("Attempting to connect to SQLite database at: {DatabasePath}", connectionStringForLog);
             
-            var dbPath = Path.GetDirectoryName(connectionStringForLog);
+            // Extract the actual file path from the connection string
+            var dbFilePath = connectionStringForLog;
+            if (connectionStringForLog.StartsWith("Data Source="))
+            {
+                dbFilePath = connectionStringForLog.Substring("Data Source=".Length);
+            }
+            
+            var dbPath = Path.GetDirectoryName(dbFilePath);
             if (!string.IsNullOrEmpty(dbPath) && !Directory.Exists(dbPath))
             {
                 Directory.CreateDirectory(dbPath);

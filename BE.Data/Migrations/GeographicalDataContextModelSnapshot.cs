@@ -2,7 +2,6 @@
 using BE.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -15,132 +14,126 @@ namespace BE.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.7")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128);
-
-            SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+            modelBuilder.HasAnnotation("ProductVersion", "9.0.7");
 
             modelBuilder.Entity("BE.Domain.Entities.GeographicalDataEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Gemeente")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("gemeente");
 
                     b.Property<string>("Huisletter")
                         .HasMaxLength(1)
-                        .HasColumnType("nvarchar(1)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("huisletter");
 
                     b.Property<int>("Huisnummer")
-                        .HasColumnType("int")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("huisnummer");
 
                     b.Property<int?>("Huisnummertoevoeging")
-                        .HasColumnType("int")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("huisnummertoevoeging");
 
-                    b.Property<decimal>("Lat")
+                    b.Property<double>("Lat")
                         .HasColumnType("decimal(18,6)")
                         .HasColumnName("lat");
 
-                    b.Property<decimal>("Lon")
+                    b.Property<double>("Lon")
                         .HasColumnType("decimal(18,6)")
                         .HasColumnName("lon");
 
                     b.Property<string>("Nevenadres")
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("nevenadres");
 
                     b.Property<string>("Nummeraanduiding")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("nummeraanduiding");
 
                     b.Property<string>("ObjectId")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("objectid");
 
                     b.Property<string>("ObjectType")
                         .IsRequired()
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("objecttype");
 
                     b.Property<string>("Openbareruimte")
                         .IsRequired()
                         .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("openbareruimte");
 
                     b.Property<int>("Oppervlakteverblijfsobject")
-                        .HasColumnType("int")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("oppervlakteverblijfsobject");
 
                     b.Property<int>("Pandbouwjaar")
-                        .HasColumnType("int")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("pandbouwjaar");
 
                     b.Property<string>("Pandid")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("pandid");
 
                     b.Property<string>("Pandstatus")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("pandstatus");
 
                     b.Property<string>("Postcode")
                         .IsRequired()
                         .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("postcode");
 
                     b.Property<string>("Provincie")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("provincie");
 
                     b.Property<string>("Verblijfsobjectgebruiksdoel")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("verblijfsobjectgebruiksdoel");
 
                     b.Property<string>("Verblijfsobjectstatus")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("verblijfsobjectstatus");
 
                     b.Property<string>("Woonplaats")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)")
+                        .HasColumnType("TEXT")
                         .HasColumnName("woonplaats");
 
                     b.Property<int>("X")
-                        .HasColumnType("int")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("x");
 
                     b.Property<int>("Y")
-                        .HasColumnType("int")
+                        .HasColumnType("INTEGER")
                         .HasColumnName("y");
 
                     b.HasKey("Id");
@@ -157,7 +150,7 @@ namespace BE.Data.Migrations
                     b.HasIndex("Openbareruimte", "Huisnummer", "Postcode")
                         .HasDatabaseName("IX_GeographicalData_Address");
 
-                    b.ToTable("GeographicalData");
+                    b.ToTable("GeographicalData", (string)null);
 
                     b.HasData(
                         new
@@ -165,8 +158,8 @@ namespace BE.Data.Migrations
                             Id = 1,
                             Gemeente = "Amsterdam",
                             Huisnummer = 1,
-                            Lat = 52.370216m,
-                            Lon = 4.895168m,
+                            Lat = 52.370215999999999,
+                            Lon = 4.895168,
                             Nummeraanduiding = "1",
                             ObjectId = "OBJ1",
                             ObjectType = "Pand",
@@ -189,8 +182,8 @@ namespace BE.Data.Migrations
                             Gemeente = "Rotterdam",
                             Huisletter = "A",
                             Huisnummer = 2,
-                            Lat = 51.9225m,
-                            Lon = 4.47917m,
+                            Lat = 51.922499999999999,
+                            Lon = 4.4791699999999999,
                             Nummeraanduiding = "2A",
                             ObjectId = "OBJ2",
                             ObjectType = "Pand",
@@ -213,8 +206,8 @@ namespace BE.Data.Migrations
                             Gemeente = "Utrecht",
                             Huisnummer = 3,
                             Huisnummertoevoeging = 1,
-                            Lat = 52.09074m,
-                            Lon = 5.12142m,
+                            Lat = 52.090739999999997,
+                            Lon = 5.1214199999999996,
                             Nummeraanduiding = "3-1",
                             ObjectId = "OBJ3",
                             ObjectType = "Pand",
