@@ -34,6 +34,13 @@ namespace BE.Middleware
 
         private async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
+            // Check if response has already started
+            if (context.Response.HasStarted)
+            {
+                _logger.LogError("Cannot set response headers, response has already started for request: {RequestPath}", context.Request.Path);
+                return;
+            }
+
             context.Response.ContentType = "application/json";
 
             var response = new ErrorResponse();
@@ -87,14 +94,22 @@ namespace BE.Middleware
                 response.StackTrace = exception.StackTrace;
             }
 
-            context.Response.StatusCode = response.StatusCode;
+            // Set status code if response hasn't started
+            if (!context.Response.HasStarted)
+            {
+                context.Response.StatusCode = response.StatusCode;
+            }
 
             var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions
             {
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
             });
 
-            await context.Response.WriteAsync(jsonResponse);
+            // Only write to response if it hasn't started
+            if (!context.Response.HasStarted)
+            {
+                await context.Response.WriteAsync(jsonResponse);
+            }
         }
     }
 

@@ -5,10 +5,33 @@ using BE.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var dataPath = Path.Combine("BE.Data", "geodata.db");
+// Database configuration with environment-specific providers
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var databaseProvider = builder.Configuration.GetValue<string>("DatabaseProvider", "SQLite");
+
 builder.Services.AddDbContext<BE.Data.GeographicalDataContext>(options =>
 {
-    options.UseSqlite($"Data Source={dataPath}");
+    switch (databaseProvider?.ToUpper())
+    {
+        case "SQLSERVER":
+        case "LOCALDB":
+            options.UseSqlServer(connectionString);
+            break;
+        case "INMEMORY":
+            options.UseInMemoryDatabase("GeographicalDataTestDb");
+            break;
+        case "SQLITE":
+        default:
+            var sqliteConnection = connectionString ?? Path.Combine("BE.Data", "Data", "geodata.db");
+            options.UseSqlite($"Data Source={sqliteConnection}");
+            break;
+    }
+    
+    if (builder.Environment.IsDevelopment())
+    {
+        options.EnableSensitiveDataLogging();
+        options.EnableDetailedErrors();
+    }
 });
 
 builder.Services.AddApiVersioning(options =>
@@ -68,25 +91,15 @@ builder.Services.AddScoped<BE.Domain.Interfaces.IBusinessValidator, BE.Services.
 
 var app = builder.Build();
 
-app.UseMiddleware<BE.Middleware.GlobalExceptionMiddleware>();
-
 app.Use(async (context, next) =>
 {
-    var logger = app.Services.GetRequiredService<ILogger<Program>>();
-    logger.LogInformation("Request: {Method} {Path} {QueryString}", 
-        context.Request.Method, 
-        context.Request.Path, 
-        context.Request.QueryString);
-    await next();
-});
-
-app.Use(async (context, next) =>
-{
-    context.Response.Headers["X-Content-Type-Options"] = "nosniff";
-    context.Response.Headers["X-Frame-Options"] = "DENY";
-    
-    context.Response.Headers["X-API-Version"] = "1.0";
-    context.Response.Headers["X-API-Name"] = "Geographical-Data-API";
+    if (!context.Response.HasStarted)
+    {
+        context.Response.Headers["X-Content-Type-Options"] = "nosniff";
+        context.Response.Headers["X-Frame-Options"] = "DENY";
+        context.Response.Headers["X-API-Version"] = "1.0";
+        context.Response.Headers["X-API-Name"] = "Geographical-Data-API";
+    }
     
     await next();
 });
@@ -99,14 +112,62 @@ if (app.Environment.IsDevelopment())
         await next();
         stopwatch.Stop();
         
-        context.Response.Headers["X-Response-Time-Ms"] = stopwatch.ElapsedMilliseconds.ToString();
+        if (!context.Response.HasStarted)
+        {
+            context.Response.Headers["X-Response-Time-Ms"] = stopwatch.ElapsedMilliseconds.ToString();
+        }
     });
 }
+
+app.UseMiddleware<BE.Middleware.GlobalExceptionMiddleware>();
+
+app.Use(async (context, next) =>
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogInformation("Request: {Method} {Path} {QueryString}", 
+        context.Request.Method, 
+        context.Request.Path, 
+        context.Request.QueryString);
+    await next();
+});
 
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<BE.Data.GeographicalDataContext>();
-    dbContext.Database.Migrate();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    
+    try
+    {
+        if (databaseProvider?.ToUpper() == "SQLITE")
+        {
+            var connectionStringForLog = connectionString ?? Path.Combine("BE.Data", "Data", "geodata.db");
+            logger.LogInformation("Attempting to connect to SQLite database at: {DatabasePath}", connectionStringForLog);
+            
+            var dbPath = Path.GetDirectoryName(connectionStringForLog);
+            if (!string.IsNullOrEmpty(dbPath) && !Directory.Exists(dbPath))
+            {
+                Directory.CreateDirectory(dbPath);
+                logger.LogInformation("Created database directory: {DatabaseDirectory}", dbPath);
+            }
+        }
+        
+        if (!string.IsNullOrEmpty(databaseProvider) && databaseProvider.Equals("InMemory", StringComparison.OrdinalIgnoreCase))
+        {
+            dbContext.Database.EnsureCreated();
+            logger.LogInformation("In-memory database created successfully");
+        }
+        else
+        {
+            dbContext.Database.Migrate();
+            logger.LogInformation("Database migration completed successfully using provider: {DatabaseProvider}", databaseProvider);
+        }
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "Error during database migration with provider {DatabaseProvider}. Connection: {ConnectionString}", 
+            databaseProvider, connectionString ?? "default");
+        throw;
+    }
 }
 
 if (app.Environment.IsDevelopment())
