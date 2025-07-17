@@ -9,11 +9,13 @@ namespace BE.Services
     public class GeographicalDataService : IGeographicalDataService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IBusinessValidator _businessValidator;
         private readonly ILogger<GeographicalDataService> _logger;
 
-        public GeographicalDataService(IUnitOfWork unitOfWork, ILogger<GeographicalDataService> logger)
+        public GeographicalDataService(IUnitOfWork unitOfWork, IBusinessValidator businessValidator, ILogger<GeographicalDataService> logger)
         {
             _unitOfWork = unitOfWork;
+            _businessValidator = businessValidator;
             _logger = logger;
         }
 
@@ -31,6 +33,21 @@ namespace BE.Services
 
         public async Task<GeographicalDataDto> CreateAsync(CreateGeographicalDataDto dto)
         {
+            var validationResult = await _businessValidator.ValidateCreateAsync(dto);
+            if (!validationResult.IsValid)
+            {
+                var errorMessage = "Validatie gefaald: " + string.Join(", ", validationResult.Errors);
+                if (validationResult.FieldErrors.Any())
+                {
+                    var fieldErrors = validationResult.FieldErrors
+                        .SelectMany(kvp => kvp.Value.Select(error => $"{kvp.Key}: {error}"));
+                    errorMessage += "; Veld fouten: " + string.Join(", ", fieldErrors);
+                }
+                
+                _logger.LogWarning("Create validation failed for DTO: {ValidationErrors}", errorMessage);
+                throw new ArgumentException(errorMessage);
+            }
+
             var entity = MapToEntity(dto);
             await _unitOfWork.BeginTransactionAsync();
             try
@@ -38,6 +55,8 @@ namespace BE.Services
                 var created = await _unitOfWork.GeographicalData.CreateAsync(entity);
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
+                
+                _logger.LogInformation("Successfully created geographical data with ID {Id}", created.Id);
                 return MapToDto(created);
             }
             catch
@@ -49,7 +68,27 @@ namespace BE.Services
 
         public async Task<GeographicalDataDto?> UpdateAsync(int id, UpdateGeographicalDataDto dto)
         {
-            if (id != dto.Id) return null;
+            if (id != dto.Id) 
+            {
+                _logger.LogWarning("Update failed: ID mismatch. URL ID: {UrlId}, DTO ID: {DtoId}", id, dto.Id);
+                return null;
+            }
+
+            var validationResult = await _businessValidator.ValidateUpdateAsync(dto);
+            if (!validationResult.IsValid)
+            {
+                var errorMessage = "Update validatie gefaald: " + string.Join(", ", validationResult.Errors);
+                if (validationResult.FieldErrors.Any())
+                {
+                    var fieldErrors = validationResult.FieldErrors
+                        .SelectMany(kvp => kvp.Value.Select(error => $"{kvp.Key}: {error}"));
+                    errorMessage += "; Veld fouten: " + string.Join(", ", fieldErrors);
+                }
+                
+                _logger.LogWarning("Update validation failed for ID {Id}: {ValidationErrors}", id, errorMessage);
+                throw new ArgumentException(errorMessage);
+            }
+
             var entity = MapToEntity(dto);
             await _unitOfWork.BeginTransactionAsync();
             try
@@ -57,6 +96,8 @@ namespace BE.Services
                 var updated = await _unitOfWork.GeographicalData.UpdateAsync(entity);
                 await _unitOfWork.SaveChangesAsync();
                 await _unitOfWork.CommitTransactionAsync();
+                
+                _logger.LogInformation("Successfully updated geographical data with ID {Id}", id);
                 return MapToDto(updated);
             }
             catch

@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using BE.Domain.Interfaces;
+using BE.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -62,10 +64,10 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddScoped<BE.Domain.Interfaces.IGeographicalDataService, BE.Services.GeographicalDataService>();
 builder.Services.AddScoped<BE.Domain.Interfaces.IGeographicalDataRepository, BE.Repositories.GeographicalDataRepository>();
 builder.Services.AddScoped<BE.Domain.Interfaces.IUnitOfWork, BE.Data.UnitOfWork>();
+builder.Services.AddScoped<BE.Domain.Interfaces.IBusinessValidator, BE.Services.BusinessValidator>();
 
 var app = builder.Build();
 
-// Add HTTP request logging
 app.Use(async (context, next) =>
 {
     var logger = app.Services.GetRequiredService<ILogger<Program>>();
