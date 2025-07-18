@@ -12,7 +12,6 @@
   <ItemGroup>
     <ProjectReference Include="..\BE.Services\BE.Services.csproj" />
     <ProjectReference Include="..\BE.Domain\BE.Domain.csproj" />
-    <!-- Removed BE.Data reference - controllers should not directly reference data layer -->
   </ItemGroup>
 
 
@@ -26,7 +25,6 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <!-- Removed duplicate packages that are already in main project or other layers -->
   </ItemGroup>
 
 </Project>

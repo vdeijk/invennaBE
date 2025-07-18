@@ -11,7 +11,6 @@ namespace BE.Services
         private readonly ILogger<BusinessValidator> _logger;
         private readonly IUnitOfWork _unitOfWork;
 
-        // Netherlands geographic bounds
         private const double NL_MIN_LAT = 50.7503;
         private const double NL_MAX_LAT = 53.5542;
         private const double NL_MIN_LON = 3.3316;

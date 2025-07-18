@@ -10,7 +10,7 @@ namespace BE.API.Controllers
     [ApiController]
     [ApiVersion("1.0")]
     [Route("api/v{version:apiVersion}/[controller]")]
-    public class GeographicalDataController : ControllerBase
+    public class GeographicalDataController : BaseApiController
     {
         private readonly ILogger<GeographicalDataController> _logger;
         private readonly IGeographicalDataService _service;
@@ -29,7 +29,6 @@ namespace BE.API.Controllers
         /// <returns>List of all geographical data items.</returns>
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<IEnumerable<GeographicalDataDto>>> GetGeographicalData()
         {
             _logger.LogInformation("Retrieving all geographical data");
@@ -45,7 +44,6 @@ namespace BE.API.Controllers
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<GeographicalDataDto>> GetGeographicalData(int id)
         {
             _logger.LogInformation("Retrieving geographical data with ID: {Id}", id);
@@ -60,7 +58,6 @@ namespace BE.API.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<GeographicalDataDto>> CreateGeographicalData([FromBody] CreateGeographicalDataDto dto)
         {
             var created = await _service.CreateAsync(dto);
@@ -78,7 +75,6 @@ namespace BE.API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<GeographicalDataDto>> UpdateGeographicalData(int id, [FromBody] UpdateGeographicalDataDto dto)
         {
             if (id != dto.Id)
@@ -101,7 +97,6 @@ namespace BE.API.Controllers
         [HttpDelete("{id}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> DeleteGeographicalData(int id)
         {
             await _service.DeleteAsync(id);
@@ -117,7 +112,6 @@ namespace BE.API.Controllers
         [HttpGet("paged")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<PagedResult<GeographicalDataDto>>> GetGeographicalDataPaged([FromQuery] PaginationParameters parameters)
         {
             _logger.LogInformation("Retrieving geographical data - Page: {Page}, Size: {Size}, Search: {Search}, Sort: {SortBy} {SortDirection}", 

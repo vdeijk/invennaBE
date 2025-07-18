@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 using System.Net;
 using System.Text.Json;
 
-namespace BE.Middleware
+namespace BE.API.Middleware
 {
     public class GlobalExceptionMiddleware
     {

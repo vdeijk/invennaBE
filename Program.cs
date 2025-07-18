@@ -118,7 +118,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseMiddleware<BE.Middleware.GlobalExceptionMiddleware>();
+app.UseMiddleware<BE.API.Middleware.GlobalExceptionMiddleware>();
 
 app.Use(async (context, next) =>
 {
